@@ -34,8 +34,7 @@ RUN curl -sSL https://git.io/n-install | sh -s -- -y lts
 RUN . ~/.bashrc && \
     npm install --global yarn
 
-RUN dnf -y install $LIBS && \
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zprofile && \
+RUN echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zprofile && \
     echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zprofile && \
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile && \ 
     echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile && \
@@ -49,8 +48,9 @@ RUN dnf -y install $LIBS && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc && \
     . ~/.profile && . ~/.bashrc && \
-    git clone https://github.com/momo-lab/xxenv-latest.git $(pyenv root)/plugins/xxenv-latest && \
-    pyenv latest install
+    git clone https://github.com/momo-lab/xxenv-latest.git $(pyenv root)/plugins/xxenv-latest
+    
+RUN . ~/.profile && . ~/.bashrc && pyenv latest install
 
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install -Ivr /tmp/dependencies/requirements.txt
