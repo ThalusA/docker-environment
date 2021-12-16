@@ -50,8 +50,7 @@ RUN dnf -y install $LIBS && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc && \
     . ~/.profile && . ~/.bashrc && \
     git clone https://github.com/momo-lab/xxenv-latest.git $(pyenv root)/plugins/xxenv-latest && \
-    pyenv latest install && \
-    curl --upload-file /tmp/python-build.*/Python-3.10.1/config.log https://transfer.sh/python-build.txt
+    pyenv latest install
 
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install -Ivr /tmp/dependencies/requirements.txt
