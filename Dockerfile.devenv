@@ -9,11 +9,11 @@ ARG ADDONS="dnf-plugins-core ca-certificates"
 ARG LANGS="langpacks-en"
 
 ARG TOOLS="curl git net-tools nc docker docker-compose zsh tar tree bash \
-           unzip zip diffutils wget bc which vim httpie util-linux-user"
+    unzip zip diffutils wget bc which vim httpie util-linux-user"
 ARG BUILD_TOOLS="autoconf automake cmake maven meson make g++ nasm \
-                 gcc clang clang-analyzer ninja-build clang-tools-extra \
-                 ghc stack cabal-install java dotnet glibc-locale-source \
-                 glibc-langpack-en"
+    gcc clang clang-analyzer ninja-build clang-tools-extra \
+    ghc stack cabal-install java dotnet glibc-locale-source \
+    glibc-langpack-en"
 ARG DEBUGGING_TOOLS="gdb valgrind strace ltrace"
 
 ARG LIBS=""
@@ -21,20 +21,28 @@ ARG LIBS=""
 RUN dnf -y upgrade && \
     dnf -y install $ADDONS $LANGS && \
     dnf -y --refresh install $TOOLS $BUILD_TOOLS $DEBUGGING_TOOLS $LIBS && \
-    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
-    localedef --verbose --force -i en_US -f UTF-8 en_US.UTF-8 && \
-    alternatives --auto java && \
+    dnf -y clean all
+
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+RUN localedef -i en_US -f UTF-8 en_US.UTF-8
+
+RUN alternatives --auto java && \
     alternatives --auto javac && \
     alternatives --auto gcc && \
-    alternatives --auto g++ && \
-    python3 -m pip install --upgrade pip && \
-    python3 -m pip install -Ivr /tmp/dependencies/requirements.txt && \
-    curl -sSL https://git.io/g-install | sh -s -- bash zsh -y && \
-    g lts && \
-    curl -sSL https://git.io/n-install | sh -s -- bash zsh -y && \
+    alternatives --auto g++
+
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install -Ivr /tmp/dependencies/requirements.txt
+
+RUN curl -sSL https://git.io/g-install | sh -s -- bash zsh -y && \
+    g lts
+
+RUN curl -sSL https://git.io/n-install | sh -s -- bash zsh -y && \
     n lts && \
-    npm install --global yarn && \
-    git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \ 
+    npm install --global yarn
+
+RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \ 
     cd ~/.pyenv && src/configure && make -C src && \
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zprofile && \
     echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zprofile && \
@@ -44,15 +52,18 @@ RUN dnf -y upgrade && \
     echo 'eval "$(pyenv init --path)"' >> ~/.profile && \
     echo 'eval "$(pyenv init -)"' >> ~/.zshrc && \
     git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv && \
-    echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && \
-    curl -sSL https://api.github.com/repos/Snaipe/Criterion/releases/latest \
+    echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+RUN curl -sSL https://api.github.com/repos/Snaipe/Criterion/releases/latest \
     | jq '.assets[0].browser_download_url' \
     | xargs curl -sSL -o package.tar.bz2 \
     | tar xvf && \
     install criterion*/ /usr && \
-    rm -rf criterion*/ && \
-    curl -s "https://get.sdkman.io" | bash && \
+    rm -rf criterion*/
+
+RUN curl -s "https://get.sdkman.io" | bash && \
     sdk install gradle && \
     sdk install kotlin
 
