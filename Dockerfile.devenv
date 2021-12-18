@@ -12,18 +12,15 @@ ARG ADDONS="dnf-plugins-core ca-certificates"
 ARG LANGS="langpacks-en"
 
 # REQUIREMENTS
-ARG TOOLS="curl git net-tools nc docker docker-compose zsh tar tree bash \
-    unzip zip diffutils wget bc which vim httpie util-linux-user bison jq"
+ARG TOOLS="curl git net-tools nc docker docker-compose zsh tar tree bash jq \
+    unzip zip diffutils wget bc which vim httpie util-linux-user bison"
 ARG BUILD_TOOLS="autoconf automake cmake maven meson make g++ nasm \
     gcc clang clang-analyzer ninja-build clang-tools-extra nodejs golang \
-    ghc stack cabal-install java dotnet glibc-locale-source yarn \
+    ghc stack cabal-install java dotnet glibc-locale-source yarnpkg \
     glibc-langpack-en python3 python3-pip python3-virtualenv glibc-devel"
 ARG DEBUGGING_TOOLS="gdb valgrind strace ltrace"
 ARG LIBS="openssl-devel bzip2 bzip2-devel readline readline-devel sqlite \
     sqlite-devel"
-
-# ADD CUSTOM REPOS
-RUN curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
 
 # INSTALL ALL PREREQUIREMENTS & REQUIREMENTS
 RUN dnf -y upgrade && \
@@ -40,7 +37,10 @@ RUN curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | 
 RUN curl -sSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | bash
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
         
-# UPDATE PIP 
+# UPDATE NPM
+RUN npm install --global npm@latest
+
+# UPDATE PIP
 RUN pip install --upgrade pip
 
 # ADD CARGO BINARIES TO PATH
