@@ -39,7 +39,7 @@ jobs:
         file: ./Dockerfile.devenv
         no-cache: true
         push: true
-        tags: "${IMAGE_TAG}:latest"
+        tags: ${IMAGE_TAG}:latest
 
     - name: Print image url
       run: echo "Image pushed to:\n${{ steps.docker-build.outputs.metadata }}"
