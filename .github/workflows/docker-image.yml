@@ -31,6 +31,12 @@ jobs:
       run: |
         echo "IMAGE_TAG=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
+    - name: Downcase Image Tag
+      id: image-tag
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository }}
+
     - name: Build and push
       id: docker-build
       uses: docker/build-push-action@v2
@@ -39,7 +45,7 @@ jobs:
         file: ./Dockerfile.devenv
         no-cache: true
         push: true
-        tags: ${IMAGE_TAG}:latest
+        tags: ${{ steps.image-tag.outputs.lowercase }}:latest
 
     - name: Print image url
       run: echo "Image pushed to:\n${{ steps.docker-build.outputs.metadata }}"
